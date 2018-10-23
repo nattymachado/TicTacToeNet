@@ -17,7 +17,7 @@ public class BoardNetworkManager: NetworkBehaviour
     private SpriteRenderer _restartInfo = null;
     private float _totalTime = 0;
     private string _optionSceneName = "OptionsScene";
-    private string _boardSceneName = "BoardScene";
+    private string _boardSceneName = "BoardNetworkScene";
 
     public Sprite Circle = null;
     public Sprite Cross = null;
@@ -30,16 +30,12 @@ public class BoardNetworkManager: NetworkBehaviour
 
     private float _timeToPlay = 0;
 
-    [SyncVar(hook = "OnSetCurrentPlayerId")]
+    
     public int currentPlayerId = 0;
 
     private Game _game = null;
 
-    private void OnSetCurrentPlayerId(int currentPlayerIdValue)
-    {
-        this.currentPlayerId = currentPlayerIdValue;
-        StartCoroutine(WaitLoadPlayerData());
-    }
+   
 
 
     public void ClickBehavior(int positionId, bool sentByServer)
@@ -105,7 +101,8 @@ public class BoardNetworkManager: NetworkBehaviour
     public void RpcSetCurrentPlayerId(int currentPlayerIdValue)
     {
         this.currentPlayerId = currentPlayerIdValue;
-        
+        StartCoroutine(WaitLoadPlayerData());
+
     }
 
     [Command]
@@ -138,11 +135,10 @@ public class BoardNetworkManager: NetworkBehaviour
     {
        
         Debug.Log("Waiting for other player data...");
-        string tag = "OtherPlayer";
-        yield return new WaitUntil(() => this._player1 != null && GameObject.FindGameObjectWithTag(tag) != null && GameObject.FindGameObjectWithTag(tag).GetComponent<NetworkIdentity>().connectionToClient.isReady);
+        yield return new WaitUntil(() => this._player1 != null);
         SpriteRenderer currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
         Debug.Log("Current Player:" + this._player1);
-        Debug.Log("Current Symbol:" + currentPlayerSymbol);
+        Debug.Log("Current Symbol:" + currentPlayerSymbol.sprite);
         if (this.currentPlayerId == this._player1.Id)
         {
             currentPlayerSymbol.sprite = this._player1.Symbol;
@@ -189,13 +185,12 @@ public class BoardNetworkManager: NetworkBehaviour
         if (!isServer) {    
             return;
         }
-        Debug.Log(NetworkServer.connections[0].playerControllers[0].unetView.isLocalPlayer);
-        Debug.Log(NetworkServer.connections[1].playerControllers[0].unetView.isLocalPlayer);
 
         StartCoroutine(CheckUser());
         _configuration = NetworkConfigurationGetter.getConfigurationObject();
         
         _game = new Game(_player1, _player2);
+       
         //_configuration.Starter = 2;
         if (_configuration.Starter == 1)
         {
@@ -207,7 +202,7 @@ public class BoardNetworkManager: NetworkBehaviour
             SetCurrentPlayer(_player2, _game);
             ChangeAllAuthority("OtherPlayer");
         }
-        RpcSetCurrentPlayerId(_game.CurrentPlayer.Id);
+        
         _finishingGame = false;
     }
 
@@ -216,6 +211,7 @@ public class BoardNetworkManager: NetworkBehaviour
         game.CurrentPlayer = player;
         _currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
         _currentPlayerSymbol.sprite = player.Symbol;
+        RpcSetCurrentPlayerId(game.CurrentPlayer.Id);
     }
 
     private void InitializeBoardPositions()

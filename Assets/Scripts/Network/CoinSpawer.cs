@@ -137,6 +137,7 @@ public class CoinSpawer : NetworkBehaviour
                 {
                     _starter = 2;
                 }
+                _starter = 1;
                 BoardNetworkConfiguration  config = NetworkConfigurationGetter.getConfigurationObject();
                 config.Starter = _starter;
                 if (_configurationGame && _configurationGame.NetworkType == NetworkOptions.Options.Lan.ToString())
