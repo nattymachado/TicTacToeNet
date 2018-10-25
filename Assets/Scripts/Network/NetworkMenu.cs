@@ -79,7 +79,7 @@ public class NetworkMenu : MonoBehaviour
 
     private void OnClientConnectClicked()
     {
-        if (networkMatchesDropwork.value > -1)
+        if (networkMatchesDropwork.value > -1 && networkMatchesDropwork.options.Count > 0)
         {
             string serverAddress = matchesData[networkMatchesDropwork.options[networkMatchesDropwork.value].text];
             NetworkManagerSpecific.singleton.networkAddress = serverAddress;
@@ -102,9 +102,7 @@ public class NetworkMenu : MonoBehaviour
         {
             foreach (var match in NetworkManagerSpecific.Discovery.broadcastsReceived.Values)
             {
-                Debug.Log(match.broadcastData);
                 var matchId = Encoding.Unicode.GetString(match.broadcastData);
-                Debug.Log(matchId);
                 if (matchesData.ContainsKey(matchId))
                 {
                     continue;
@@ -123,16 +121,20 @@ public class NetworkMenu : MonoBehaviour
 
     public void CreateLanMatch()
     {
-        NetworkManagerSpecific.Discovery.StopBroadcast();
-        NetworkManagerSpecific.Discovery.broadcastData = RoomNameInput.text;
-        NetworkManagerSpecific.Discovery.StartAsServer();
-        NetworkManagerSpecific.singleton.StartHost();
-        _isConnected = true;
+        if (RoomNameInput.text != "")
+        {
+            NetworkManagerSpecific.Discovery.StopBroadcast();
+            NetworkManagerSpecific.Discovery.broadcastData = RoomNameInput.text;
+            NetworkManagerSpecific.Discovery.StartAsServer();
+            NetworkManagerSpecific.singleton.StartHost();
+            _isConnected = true;
+        } 
+        
     }
 
     public void CreateLobbyMatch()
     {
-        if (NetworkLobbyManagerSpecific.LobbyManager)
+        if (NetworkLobbyManagerSpecific.LobbyManager && RoomNameInput.text != "")
         {
             NetworkLobbyManagerSpecific.LobbyManager.MMCreateMatch(RoomNameInput.text);
 
@@ -141,10 +143,8 @@ public class NetworkMenu : MonoBehaviour
 
     public void JoinLobbyMatch()
     {
-        Debug.Log("1");
-        if (networkMatchesDropwork.value > -1)
+        if (networkMatchesDropwork.value > -1 && networkMatchesDropwork.options.Count > 0)
         {
-            Debug.Log("1");
             NetworkLobbyManagerSpecific.LobbyManager.MMJoin(networkMatchesDropwork.options[networkMatchesDropwork.value].text);
             _isConnected = true;
         }

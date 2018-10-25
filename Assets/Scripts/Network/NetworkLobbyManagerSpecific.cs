@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Text;
 using UnityEngine.Networking.Types;
+using System.Collections;
 
 public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
 
@@ -65,6 +66,27 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         this.matchMaker.ListMatches(0, 20, "", true, 0, 0, OnMatchList);
     }
 
+    public override void OnClientDisconnect(NetworkConnection conn)
+    {
+        //Application.Quit();
+
+    }
+
+    private IEnumerator EndApplication()
+    {
+       print(Time.time);
+       yield return new WaitForSeconds(5);
+       //Application.Quit();
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        Debug.Log("Alguém desconectou vou sair");
+        StartCoroutine(Timer.WaitATime(10));
+        base.OnServerDisconnect(conn);
+        //Application.Quit();
+    }
+
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
     {
         Debug.Log("@ OnMatchList");
@@ -89,22 +111,11 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
                 _optionMatchesList.Add(new Dropdown.OptionData(match.name));
 
                 _matchesData[match.name] = match;
-                _optionMatchesList.Add(new Dropdown.OptionData(match.name));
             }
 
             networkMatchesDropwork.AddOptions(_optionMatchesList);
         }
     }
-
-    //Detect when a client connects to the Server
-    /*public override void OnLobbyServerConnect(NetworkConnection conn)
-    {
-        base.OnLobbyClientConnect(conn);
-        Debug.Log(ClientScene.reconnectId);
-        Debug.Log("Client Side : Client " + conn.connectionId + " Connected!");
-        _playersOnLobby += 1;
-        
-    }*/
 
     public override void OnServerConnect(NetworkConnection conn)
     {
@@ -123,20 +134,6 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         Debug.Log("@ClentReady");
         base.OnServerReady(conn);
     }
-
-    //Detect when a client connects to the Server
-    /*public override void OnClientSceneChanged(NetworkConnection conn)
-    {
-
-        //ClientScene.Ready(conn);
-        //ClientScene.AddPlayer(0);
-        Debug.Log("Tô aqui");
-        base.OnClientSceneChanged(conn);
-    }*/
-
-
-
-
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
@@ -158,11 +155,12 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
 
     public void MMJoin(string matchName)
     {
-        Debug.Log("@ MMJoinMatch");
-        Debug.Log("2");
-        MatchInfoSnapshot match = _matchesData[matchName];
-        Debug.Log("3");
-        this.matchMaker.JoinMatch(match.networkId, "", "", "", 0, 0,OnMatchJoined);
+        if (matchName != null && matchName != "") {
+            Debug.Log("@ MMJoinMatch");
+            MatchInfoSnapshot match = _matchesData[matchName];
+            this.matchMaker.JoinMatch(match.networkId, "", "", "", 0, 0, OnMatchJoined);
+        }
+        
     }
 
     public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)

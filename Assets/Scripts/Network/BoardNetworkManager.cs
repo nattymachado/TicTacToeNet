@@ -23,6 +23,10 @@ public class BoardNetworkManager: NetworkBehaviour
     public Sprite Cross = null;
     public Sprite CrossWithCircle = null;
     public Sprite CircleWithCircle = null;
+
+    public SpriteRenderer LoadingSprite = null;
+    public SpriteRenderer LoadingText = null;
+
     private bool _finishingGame = false;
     private  Player _player1 = null;
     private Player _player2 = null;
@@ -40,7 +44,14 @@ public class BoardNetworkManager: NetworkBehaviour
 
     public void ClickBehavior(int positionId, bool sentByServer)
     {
-        if (!_game.IsOver)
+        int numPlayers = 0;
+
+        if (_configuration && _configuration.NetworkType == NetworkOptions.Options.Lan.ToString())
+            numPlayers = NetworkManagerSpecific.singleton.numPlayers;
+        else
+            numPlayers = NetworkLobbyManagerSpecific.LobbyManager.numPlayers;
+
+        if (!_game.IsOver && numPlayers > 1 && NetworkServer.connections.Count > 1 && NetworkServer.connections[0].isReady && NetworkServer.connections[1].isReady)
         {
 
             Debug.Log("Player is server:" + sentByServer);
@@ -60,7 +71,6 @@ public class BoardNetworkManager: NetworkBehaviour
                     RpcSetPositions(_game.CurrentPlayer.Id, positionId);
                     Player current = (_game.CurrentPlayer == _game.Player1) ? _game.Player2 : _game.Player1;
                     SetCurrentPlayer(current, _game);
-                    RpcSetCurrentPlayerId(_game.CurrentPlayer.Id);
 
                     if (current.Id == 1)
                     {
@@ -101,7 +111,7 @@ public class BoardNetworkManager: NetworkBehaviour
     public void RpcSetCurrentPlayerId(int currentPlayerIdValue)
     {
         this.currentPlayerId = currentPlayerIdValue;
-        StartCoroutine(WaitLoadPlayerData());
+        LoadNextPlayer();
 
     }
 
@@ -131,14 +141,11 @@ public class BoardNetworkManager: NetworkBehaviour
         StartCoroutine(CheckOtherPlayer(tag, position));
     }
 
-    private IEnumerator WaitLoadPlayerData()
+    private void LoadNextPlayer()
     {
        
         Debug.Log("Waiting for other player data...");
-        yield return new WaitUntil(() => this._player1 != null);
         SpriteRenderer currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
-        Debug.Log("Current Player:" + this._player1);
-        Debug.Log("Current Symbol:" + currentPlayerSymbol.sprite);
         if (this.currentPlayerId == this._player1.Id)
         {
             currentPlayerSymbol.sprite = this._player1.Symbol;
@@ -239,6 +246,28 @@ public class BoardNetworkManager: NetworkBehaviour
 
     private void Update()
     {
+        if (ClientScene.ready && LoadingSprite.enabled)
+        {
+            Debug.Log("Loading finish ...");
+            LoadingSprite.enabled = false;
+            LoadingText.enabled = false;
+            if (isClient)
+            {
+                _currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
+                if (_configuration.Starter == 1)
+                {
+                    _currentPlayerSymbol.sprite = Cross;
+                } else
+                {
+                    _currentPlayerSymbol.sprite = Circle;
+                }
+            }
+            
+           
+            return;
+
+
+        }
         if (_game != null && (_game.IsOver || _game.GetPossibleMoves().Count == 0))
         {
             if (_finishingGame == false)
@@ -248,7 +277,7 @@ public class BoardNetworkManager: NetworkBehaviour
                 FindingWinner();
                 _finishingGame = true;
             }
-            //EndGame();
+            EndGame();
 
         }
     }
@@ -278,12 +307,12 @@ public class BoardNetworkManager: NetworkBehaviour
 
     private void EndGame()
     {
-        _totalTime += Time.deltaTime;
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-        {
-            StartCoroutine(SceneLoader.LoadScene(_optionSceneName));
-            StartCoroutine(SceneLoader.UnloadScene(_boardSceneName));
-        }
+        //StartCoroutine(Timer.WaitATime(10));
+        //NetworkLobbyManagerSpecific.Shutdown();
+        Application.Quit();
+        //StartCoroutine(SceneLoader.LoadScene(_optionSceneName));
+        //StartCoroutine(SceneLoader.UnloadScene(_boardSceneName));
+
     }
 
     [ClientRpc]

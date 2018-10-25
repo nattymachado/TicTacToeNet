@@ -9,12 +9,12 @@ public class BoardConfigurationGetter {
 
     private static string _configurationZoneName = "ConfigurationZone";
 
-
     public static BoardConfiguration getConfigurationObject()
     {
 
        
         Scene configurationZone = SceneManager.GetSceneByName(_configurationZoneName);
+        
         BoardConfiguration _boardConfiguration = null;
         if (configurationZone.GetRootGameObjects().Length > 0)
         {
