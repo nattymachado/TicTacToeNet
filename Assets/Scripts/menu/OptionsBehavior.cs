@@ -56,7 +56,6 @@ public class OptionsBehavior : MonoBehaviour {
         });
 
         _configuration = BoardConfigurationGetter.getConfigurationObject();
-        _configuration.EnabledGeneralAudio();
         _configuration.Difficulty = (DifficultyOptions.Options) 0;
 
     }

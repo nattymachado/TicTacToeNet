@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 212841840273416330}
   - component: {fileID: 61224992896091550}
   - component: {fileID: 114130594981244330}
-  - component: {fileID: 114259621285223158}
   m_Layer: 0
   m_Name: butterfly
   m_TagString: Untagged
@@ -138,38 +137,6 @@ MonoBehaviour:
   WaveLength: 10
   WaveAmplitude: 5
   Speed: 5
---- !u!114 &114259621285223158
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1372071303419038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 148
-    i1: 32
-    i2: 86
-    i3: 208
-    i4: 217
-    i5: 45
-    i6: 83
-    i7: 84
-    i8: 72
-    i9: 195
-    i10: 252
-    i11: 38
-    i12: 187
-    i13: 114
-    i14: 67
-    i15: 93
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 1
 --- !u!212 &212841840273416330
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -201,9 +168,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -574926037
+  m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 99
   m_Sprite: {fileID: 21300000, guid: 706e38aef23733d4d8dadf3b03d51ee3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

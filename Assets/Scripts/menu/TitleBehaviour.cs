@@ -9,10 +9,12 @@ public class TitleBehaviour : MonoBehaviour {
     private string _titleSceneName = "TitleScene";
     private SpriteRenderer _renderer = null;
     public Sprite StartTitleSprite = null;
+    public GameObject Audio;
 
 
     // Use this for initialization
     private void Start () {
+        DontDestroyOnLoad(Audio.GetComponent<AudioSource>());
         _renderer = GetComponent<SpriteRenderer>();
         _renderer.sprite = StartTitleSprite;
         StartCoroutine(SceneLoader.LoadScene("ConfigurationZone"));

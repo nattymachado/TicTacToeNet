@@ -8,11 +8,10 @@ public class BoardConfiguration : MonoBehaviour {
     private NetworkOptions.Options _network = NetworkOptions.Options.Lan;
     private GameModeOption _gameModeOption = null;
     private int _starter = 0;
-    private AudioSource _audio = null;
 
     public void Start()
     {
-        _audio = GetComponent<AudioSource>();
+        
     }
 
     public DifficultyOptions.Options Difficulty
@@ -63,14 +62,5 @@ public class BoardConfiguration : MonoBehaviour {
         }
     }
 
-    public void DisabledGeneralAudio()
-    {
-        _audio.enabled = false;
-    }
-
-    public void EnabledGeneralAudio()
-    {
-        _audio.enabled = true;
-    }
 
 }

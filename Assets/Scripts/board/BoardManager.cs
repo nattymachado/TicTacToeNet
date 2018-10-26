@@ -30,7 +30,6 @@ public class BoardManager: MonoBehaviour {
         
         
         _configuration = BoardConfigurationGetter.getConfigurationObject();
-        _configuration.DisabledGeneralAudio();
         Player player1 = null;
         Player player2 = null;
         _restartInfo = GameObject.Find("restartInfo").GetComponent<SpriteRenderer>();
