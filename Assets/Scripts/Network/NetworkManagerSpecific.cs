@@ -91,13 +91,39 @@ public class NetworkManagerSpecific : NetworkManager {
         base.OnClientSceneChanged(conn);
     }
 
+    public override void OnClientDisconnect(NetworkConnection conn)
+    {
+        DestroyDontDestroy();
+        Application.Quit();
+
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        DestroyDontDestroy();
+        Application.Quit();
+    }
+
+    
     public static void StartDiscovery()
     {
         NetworkManagerSpecific.Discovery.Initialize();
         NetworkManagerSpecific.Discovery.StartAsClient();
     }
 
-    
+    private void DestroyDontDestroy()
+    {
+        GameObject temp = new GameObject();
+        UnityEngine.Object.DontDestroyOnLoad(temp);
+        UnityEngine.SceneManagement.Scene dontDestroyOnLoad = temp.scene;
+        GameObject[] g = dontDestroyOnLoad.GetRootGameObjects();
+        for (int i = 0; i < dontDestroyOnLoad.rootCount; i++)
+        {
+            Destroy(g[i]);
+        }
+    }
+
+
     // Use this for initialization
     void Start () {
         NetworkManagerSpecific.Discovery.Initialize();

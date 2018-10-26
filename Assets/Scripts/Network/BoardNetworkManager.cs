@@ -145,7 +145,7 @@ public class BoardNetworkManager: NetworkBehaviour
     {
        
         Debug.Log("Waiting for other player data...");
-        SpriteRenderer currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
+        /*SpriteRenderer currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
         if (this.currentPlayerId == this._player1.Id)
         {
             currentPlayerSymbol.sprite = this._player1.Symbol;
@@ -153,7 +153,7 @@ public class BoardNetworkManager: NetworkBehaviour
         else
         {
             currentPlayerSymbol.sprite = this._player2.Symbol;
-        }
+        }*/
     }
     
     private IEnumerator CheckOtherPlayer(String tag, NetworkIdentity position)
@@ -216,8 +216,8 @@ public class BoardNetworkManager: NetworkBehaviour
     private void SetCurrentPlayer(Player player, Game game)
     {
         game.CurrentPlayer = player;
-        _currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
-        _currentPlayerSymbol.sprite = player.Symbol;
+        //_currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
+        //_currentPlayerSymbol.sprite = player.Symbol;
         RpcSetCurrentPlayerId(game.CurrentPlayer.Id);
     }
 
@@ -251,18 +251,6 @@ public class BoardNetworkManager: NetworkBehaviour
             Debug.Log("Loading finish ...");
             LoadingSprite.enabled = false;
             LoadingText.enabled = false;
-            if (isClient)
-            {
-                _currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
-                if (_configuration.Starter == 1)
-                {
-                    _currentPlayerSymbol.sprite = Cross;
-                } else
-                {
-                    _currentPlayerSymbol.sprite = Circle;
-                }
-            }
-            
            
             return;
 
@@ -277,7 +265,7 @@ public class BoardNetworkManager: NetworkBehaviour
                 FindingWinner();
                 _finishingGame = true;
             }
-            EndGame();
+            StartCoroutine(EndGame());
 
         }
     }
@@ -305,15 +293,14 @@ public class BoardNetworkManager: NetworkBehaviour
         //_restartInfo.enabled = true;
     }
 
-    private void EndGame()
+    private IEnumerator EndGame()
     {
-        //StartCoroutine(Timer.WaitATime(10));
-        //NetworkLobbyManagerSpecific.Shutdown();
+        yield return new WaitForSeconds(10);
         Application.Quit();
-        //StartCoroutine(SceneLoader.LoadScene(_optionSceneName));
-        //StartCoroutine(SceneLoader.UnloadScene(_boardSceneName));
 
     }
+
+   
 
     [ClientRpc]
     public void RpcSetWinner(int winnerId, int position)

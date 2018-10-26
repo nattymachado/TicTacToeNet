@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System;
+using System.Collections;
 
 public class CoinSpawer : NetworkBehaviour
 {
@@ -38,7 +40,7 @@ public class CoinSpawer : NetworkBehaviour
         NetworkServer.Spawn(_coinObj1);
         _coin = _coinObj1.GetComponent<SpriteRenderer>();
         _initScaleX = _coin.transform.localScale.x;
-        _luckyNumber = Random.Range(20f, 30f);
+        _luckyNumber = UnityEngine.Random.Range(20f, 30f);
         _coinObj = _coinObj1;
     }
 
@@ -137,21 +139,28 @@ public class CoinSpawer : NetworkBehaviour
                 {
                     _starter = 2;
                 }
-                _starter = 1;
-                BoardNetworkConfiguration  config = NetworkConfigurationGetter.getConfigurationObject();
-                config.Starter = _starter;
-                if (_configurationGame && _configurationGame.NetworkType == NetworkOptions.Options.Lan.ToString())
-                    NetworkManagerSpecific.singleton.ServerChangeScene("BoardNetworkScene");
-                else
-                    NetworkLobbyManagerSpecific.LobbyManager.ServerChangeScene("BoardNetworkScene");
+                StartCoroutine(CallNextScene());
+                
+                
             }
         }
 
-        
+      
 
     }
 
+    private IEnumerator CallNextScene()
+    {
+        yield return new WaitForSeconds(5);
+        BoardNetworkConfiguration config = NetworkConfigurationGetter.getConfigurationObject();
+        config.Starter = _starter;
+        if (_configurationGame && _configurationGame.NetworkType == NetworkOptions.Options.Lan.ToString())
+            NetworkManagerSpecific.singleton.ServerChangeScene("BoardNetworkScene");
+        else
+            NetworkLobbyManagerSpecific.LobbyManager.ServerChangeScene("BoardNetworkScene");
+    }
 
-   
+
+
 
 }

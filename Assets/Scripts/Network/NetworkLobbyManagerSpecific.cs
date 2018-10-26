@@ -66,25 +66,29 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         this.matchMaker.ListMatches(0, 20, "", true, 0, 0, OnMatchList);
     }
 
-    public override void OnClientDisconnect(NetworkConnection conn)
+    private void DestroyDontDestroy()
     {
-        //Application.Quit();
-
+        GameObject temp = new GameObject();
+        UnityEngine.Object.DontDestroyOnLoad(temp);
+        UnityEngine.SceneManagement.Scene dontDestroyOnLoad = temp.scene;
+        GameObject[] g = dontDestroyOnLoad.GetRootGameObjects();
+        for (int i = 0; i < dontDestroyOnLoad.rootCount; i++)
+        {
+            Destroy(g[i]);
+        }
     }
 
-    private IEnumerator EndApplication()
+    public override void OnClientDisconnect(NetworkConnection conn)
     {
-       print(Time.time);
-       yield return new WaitForSeconds(5);
-       //Application.Quit();
+        DestroyDontDestroy();
+        Application.Quit();
+
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        Debug.Log("Alguém desconectou vou sair");
-        StartCoroutine(Timer.WaitATime(10));
-        base.OnServerDisconnect(conn);
-        //Application.Quit();
+        DestroyDontDestroy();
+        Application.Quit();
     }
 
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
